@@ -6,7 +6,15 @@
     <title>Admin - KartManager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css"> <link rel="stylesheet" href="css/admin.css"> </head>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* CSS Inline para garantir o visual caso o admin.css não exista */
+        .list-area { max-height: 200px; overflow-y: auto; background: #2c3e50; padding: 10px; border-radius: 5px; }
+        .nav-pills .nav-link.active { background-color: #dc3545; } /* Vermelho Racing */
+        .nav-pills .nav-link { color: #dc3545; }
+        .badge-points { font-size: 1.2em; }
+    </style>
+</head>
 <body>
     <nav class="navbar navbar-dark bg-danger mb-4 shadow">
         <div class="container">
@@ -17,65 +25,103 @@
 
     <div class="container pb-5">
         <ul class="nav nav-pills mb-4 justify-content-center" id="adminTabs">
-            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-cadastros">1. Cadastros</button></li>
-            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-pontos" onclick="updateSelects()">2. Lançar Pontos</button></li>
+            <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-cadastros">1. Cadastros</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-pontos" onclick="updateSelects()">2. Lançar Pontos</button>
+            </li>
         </ul>
 
         <div class="tab-content">
             <div class="tab-pane fade show active" id="tab-cadastros">
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <div class="card p-3 h-100">
-                            <h5 class="text-warning mb-3">Novo Piloto</h5>
+                        <div class="card p-3 h-100 shadow-sm">
+                            <h5 class="text-danger mb-3"><i class="fas fa-user-helmet-safety"></i> Novo Piloto</h5>
                             <form id="driverForm">
                                 <div class="row g-2">
                                     <div class="col-6"><input type="text" class="form-control" id="driverName" placeholder="Nome" required></div>
                                     <div class="col-6"><input type="text" class="form-control" id="driverSurname" placeholder="Sobrenome" required></div>
                                 </div>
-                                <input type="number" class="form-control mt-2" id="driverAge" placeholder="Idade" required>
-                                <button type="submit" class="btn btn-racing w-100 mt-3">Salvar Piloto</button>
+                                <input type="number" class="form-control mt-2" id="driverAge" placeholder="Idade">
+                                <button type="submit" class="btn btn-danger w-100 mt-3">Salvar Piloto</button>
                             </form>
                             <hr>
-                            <div class="list-area"><table class="table table-sm table-dark"><tbody id="driversListTable"></tbody></table></div>
+                            <h6 class="text-muted small">Pilotos Cadastrados:</h6>
+                            <div class="list-area">
+                                <table class="table table-sm table-dark table-striped mb-0">
+                                    <tbody id="driversListTable"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
+
                     <div class="col-md-6 mb-3">
-                        <div class="card p-3 h-100">
-                            <h5 class="text-warning mb-3">Nova Corrida</h5>
+                        <div class="card p-3 h-100 shadow-sm">
+                            <h5 class="text-danger mb-3"><i class="fas fa-flag-checkered"></i> Nova Corrida</h5>
                             <form id="raceForm">
-                                <input type="text" class="form-control mb-2" id="raceName" placeholder="Nome da Pista" required>
+                                <input type="text" class="form-control mb-2" id="raceName" placeholder="Nome da Pista (ex: Interlagos)" required>
                                 <div class="row g-2">
                                     <div class="col-7"><input type="date" class="form-control" id="raceDate" required></div>
-                                    <div class="col-5"><input type="text" class="form-control" id="raceFlag" placeholder="Bandeira (🇧🇷)" required></div>
+                                    <div class="col-5"><input type="text" class="form-control" id="raceFlag" placeholder="Bandeira (🇧🇷)" value="🇧🇷"></div>
                                 </div>
-                                <button type="submit" class="btn btn-racing w-100 mt-3">Agendar Corrida</button>
+                                <button type="submit" class="btn btn-danger w-100 mt-3">Agendar Corrida</button>
                             </form>
                             <hr>
-                            <div class="list-area"><table class="table table-sm table-dark"><tbody id="racesListTable"></tbody></table></div>
+                            <h6 class="text-muted small">Calendário:</h6>
+                            <div class="list-area">
+                                <table class="table table-sm table-dark table-striped mb-0">
+                                    <tbody id="racesListTable"></tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <div class="tab-pane fade" id="tab-pontos">
-                <div class="card p-4">
-                    <div class="row mb-3">
-                        <div class="col-md-9"><select id="scoringRaceSelect" class="form-select"></select></div>
-                        <div class="col-md-3"><button class="btn btn-light w-100" onclick="loadScoringTable()">Carregar Grid</button></div>
+                <div class="card p-4 shadow-sm">
+                    <h5 class="mb-3 text-danger">Gerenciar Grid de Chegada</h5>
+                    <div class="row mb-3 align-items-end">
+                        <div class="col-md-9">
+                            <label class="text-muted small">Selecione a Corrida:</label>
+                            <select id="scoringRaceSelect" class="form-select form-select-lg"></select>
+                        </div>
+                        <div class="col-md-3">
+                            <button class="btn btn-dark w-100 btn-lg" onclick="loadScoringTable()">
+                                <i class="fas fa-list-ol"></i> Carregar
+                            </button>
+                        </div>
                     </div>
-                    <div id="scoringArea" style="display:none;">
+                    
+                    <div id="scoringArea" style="display:none; border-top: 1px solid #eee; padding-top: 20px;">
                         <form id="pointsForm">
-                            <table class="table table-dark align-middle">
-                                <thead><tr><th>Piloto</th><th width="100">Pos</th><th class="text-center">V. Rápida</th><th class="text-end">Pts</th></tr></thead>
-                                <tbody id="scoringTableBody"></tbody>
-                            </table>
-                            <button type="submit" class="btn btn-success w-100 btn-lg">SALVAR RESULTADOS</button>
+                            <div class="table-responsive">
+                                <table class="table align-middle table-hover">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th>Piloto</th>
+                                            <th width="120">Posição Chegada</th>
+                                            <th class="text-center">Volta Rápida?</th>
+                                            <th class="text-end">Pontos Calc.</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="scoringTableBody"></tbody>
+                                </table>
+                            </div>
+                            <button type="submit" class="btn btn-success w-100 btn-lg mt-3 fw-bold">
+                                <i class="fas fa-save"></i> SALVAR RESULTADOS OFICIAIS
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script src="js/admin.js"></script>
 </body>
 </html>
