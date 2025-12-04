@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ranking Oficial - Kart Championship</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="header-hero">
+        <div class="container">
+            <h1 class="display-5 fw-bold text-uppercase fst-italic"><i class="fas fa-flag-checkered"></i> Ranking Oficial</h1>
+            <p class="lead text-light opacity-75">Temporada 2024/2025</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="d-flex justify-content-center mb-4">
+            <div class="btn-group" role="group">
+                <input type="radio" class="btn-check" name="btnradio" id="btnGeral" autocomplete="off" checked onclick="showGlobal()">
+                <label class="btn btn-outline-light" for="btnGeral">🏆 Classificação Geral</label>
+
+                <input type="radio" class="btn-check" name="btnradio" id="btnCorrida" autocomplete="off" onclick="showRace()">
+                <label class="btn btn-outline-light" for="btnCorrida">🏁 Por Etapa</label>
+            </div>
+        </div>
+
+        <div id="panel-global" class="rank-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="text-center py-3">#</th>
+                            <th class="py-3">Piloto</th>
+                            <th class="text-center py-3">Corridas</th>
+                            <th class="text-center py-3">PONTOS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="globalTable">
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="panel-race" class="rank-card p-3" style="display:none;">
+            <select id="raceSelect" class="form-select mb-4" onchange="renderRaceRank()">
+                <option value="">-- Selecione a Etapa --</option>
+            </select>
+            
+            <div id="raceResultArea" style="display:none;">
+                <h3 id="raceTitle" class="text-center text-info mb-3"></h3>
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr><th class="text-center">Pos</th><th>Piloto</th><th class="text-center">Pts</th></tr>
+                        </thead>
+                        <tbody id="raceTable"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="text-center mt-5 mb-3 text-muted small">
+            Atualize a página para ver os dados mais recentes.
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

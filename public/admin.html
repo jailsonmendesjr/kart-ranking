@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - KartManager</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css"> <link rel="stylesheet" href="css/admin.css"> </head>
+<body>
+    <nav class="navbar navbar-dark bg-danger mb-4 shadow">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1"><i class="fas fa-cogs"></i> Painel Administrativo</span>
+            <a href="/" target="_blank" class="btn btn-outline-light btn-sm"><i class="fas fa-external-link-alt"></i> Ver Site</a>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        <ul class="nav nav-pills mb-4 justify-content-center" id="adminTabs">
+            <li class="nav-item"><button class="nav-link active" data-bs-toggle="pill" data-bs-target="#tab-cadastros">1. Cadastros</button></li>
+            <li class="nav-item"><button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-pontos" onclick="updateSelects()">2. Lançar Pontos</button></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane fade show active" id="tab-cadastros">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="card p-3 h-100">
+                            <h5 class="text-warning mb-3">Novo Piloto</h5>
+                            <form id="driverForm">
+                                <div class="row g-2">
+                                    <div class="col-6"><input type="text" class="form-control" id="driverName" placeholder="Nome" required></div>
+                                    <div class="col-6"><input type="text" class="form-control" id="driverSurname" placeholder="Sobrenome" required></div>
+                                </div>
+                                <input type="number" class="form-control mt-2" id="driverAge" placeholder="Idade" required>
+                                <button type="submit" class="btn btn-racing w-100 mt-3">Salvar Piloto</button>
+                            </form>
+                            <hr>
+                            <div class="list-area"><table class="table table-sm table-dark"><tbody id="driversListTable"></tbody></table></div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="card p-3 h-100">
+                            <h5 class="text-warning mb-3">Nova Corrida</h5>
+                            <form id="raceForm">
+                                <input type="text" class="form-control mb-2" id="raceName" placeholder="Nome da Pista" required>
+                                <div class="row g-2">
+                                    <div class="col-7"><input type="date" class="form-control" id="raceDate" required></div>
+                                    <div class="col-5"><input type="text" class="form-control" id="raceFlag" placeholder="Bandeira (🇧🇷)" required></div>
+                                </div>
+                                <button type="submit" class="btn btn-racing w-100 mt-3">Agendar Corrida</button>
+                            </form>
+                            <hr>
+                            <div class="list-area"><table class="table table-sm table-dark"><tbody id="racesListTable"></tbody></table></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-pontos">
+                <div class="card p-4">
+                    <div class="row mb-3">
+                        <div class="col-md-9"><select id="scoringRaceSelect" class="form-select"></select></div>
+                        <div class="col-md-3"><button class="btn btn-light w-100" onclick="loadScoringTable()">Carregar Grid</button></div>
+                    </div>
+                    <div id="scoringArea" style="display:none;">
+                        <form id="pointsForm">
+                            <table class="table table-dark align-middle">
+                                <thead><tr><th>Piloto</th><th width="100">Pos</th><th class="text-center">V. Rápida</th><th class="text-end">Pts</th></tr></thead>
+                                <tbody id="scoringTableBody"></tbody>
+                            </table>
+                            <button type="submit" class="btn btn-success w-100 btn-lg">SALVAR RESULTADOS</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="js/admin.js"></script>
+</body>
+</html>

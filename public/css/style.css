@@ -1,0 +1,13 @@
+:root { --accent-color: #f1c40f; --bg-dark: #121212; --text-light: #f8f9fa; --card-bg: #1e1e1e; }
+body { background-color: var(--bg-dark); color: var(--text-light); font-family: 'Segoe UI', sans-serif; }
+.header-hero { background: linear-gradient(135deg, #c0392b 0%, #2c3e50 100%); padding: 40px 0; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); margin-bottom: 30px; }
+.rank-card { background: var(--card-bg); border-radius: 12px; border: 1px solid #333; overflow: hidden; margin-bottom: 20px; }
+.table { color: #ddd; margin-bottom: 0; }
+.pos-1 { color: #f1c40f; font-weight: 900; font-size: 1.2rem; }
+.pos-2 { color: #bdc3c7; font-weight: 800; }
+.pos-3 { color: #cd7f32; font-weight: 800; }
+.form-select, .form-control { background-color: #333; color: white; border: 1px solid #555; }
+.form-select:focus, .form-control:focus { background-color: #444; color: white; border-color: #c0392b; box-shadow: none; }
+.btn-racing { background-color: #c0392b; color: white; font-weight: bold; border: none; }
+.btn-racing:hover { background-color: #e74c3c; color: white; }
+.list-area { max-height: 200px; overflow-y: auto; }
