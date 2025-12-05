@@ -202,3 +202,5 @@ document.getElementById('pointsForm').addEventListener('submit', async (e) => {
 await apiPost('/api/results', { raceId: rId, results: newResults });
     alert('Resultados salvos e ranking atualizado!');
 });
+
+// TESTE DE COMENTÁRIO
