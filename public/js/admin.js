@@ -199,6 +199,6 @@ document.getElementById('pointsForm').addEventListener('submit', async (e) => {
         return;
     }
 
-    await apiPost('/api/results', { raceId: rId, results: newResults });
+await apiPost('/api/results', { raceId: rId, results: newResults });
     alert('Resultados salvos e ranking atualizado!');
 });
