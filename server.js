@@ -192,6 +192,36 @@ app.delete('/api/races/:id', isAuthenticated, async (req, res) => {
     }
 });
 
+// --- NOVAS ROTAS DE EDIÇÃO (PUT) ---
+
+// Atualizar Piloto
+app.put('/api/drivers/:id', isAuthenticated, async (req, res) => {
+    const { name, surname, age } = req.body;
+    try {
+        await dbRun(
+            "UPDATE drivers SET name = ?, surname = ?, age = ? WHERE id = ?",
+            [name, surname, age, req.params.id]
+        );
+        res.json({ message: 'Piloto atualizado!' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Atualizar Corrida
+app.put('/api/races/:id', isAuthenticated, async (req, res) => {
+    const { name, date, flag } = req.body;
+    try {
+        await dbRun(
+            "UPDATE races SET name = ?, date = ?, flag = ? WHERE id = ?",
+            [name, date, flag, req.params.id]
+        );
+        res.json({ message: 'Corrida atualizada!' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // 6. Salvar Resultados
 app.post('/api/results', isAuthenticated, async (req, res) => {
     const { raceId, results } = req.body;

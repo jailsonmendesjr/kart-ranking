@@ -2,10 +2,14 @@
 const POINTS_SYSTEM = { 1: 25, 2: 18, 3: 15, 4: 12, 5: 10, 6: 8, 7: 6, 8: 4, 9: 2, 10: 1 };
 
 let appData = { drivers: [], races: [], results: [] };
+// Instâncias dos Modais do Bootstrap
+let driverModal, raceModal;
 
-// Ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
     refreshData();
+    // Inicializa os modais
+    driverModal = new bootstrap.Modal(document.getElementById('editDriverModal'));
+    raceModal = new bootstrap.Modal(document.getElementById('editRaceModal'));
 });
 
 // Busca dados atualizados do servidor
@@ -14,40 +18,38 @@ async function refreshData() {
         const res = await fetch('/api/data');
         appData = await res.json();
         renderLists();
+        updateSelects();
     } catch (error) {
         console.error("Erro ao conectar com servidor:", error);
     }
 }
 
-// Funções Genéricas de API
-async function apiPost(url, body) {
+// --- FUNÇÕES DE API GENÉRICAS ---
+
+async function apiRequest(url, method, body = null) {
     try {
-        const res = await fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(body)
-        });
+        const options = {
+            method: method,
+            headers: { 'Content-Type': 'application/json' }
+        };
+        if (body) options.body = JSON.stringify(body);
+
+        const res = await fetch(url, options);
         if (res.ok) {
             await refreshData();
             return true;
+        } else {
+            alert('Erro na operação. Verifique se está logado.');
         }
     } catch (error) {
         console.error(error);
-        alert('Erro ao salvar dados.');
+        alert('Erro de conexão.');
     }
     return false;
 }
 
-async function apiDelete(url) {
-    if(confirm('Tem certeza que deseja excluir este item? Isso pode afetar o ranking.')) {
-        await fetch(url, { method: 'DELETE' });
-        refreshData();
-    }
-}
+// --- EVENTOS DE CADASTRO (CRIAR) ---
 
-// --- EVENTOS DE FORMULÁRIO (CADASTROS) ---
-
-// 1. Salvar Piloto
 document.getElementById('driverForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const newDriver = {
@@ -56,13 +58,12 @@ document.getElementById('driverForm').addEventListener('submit', async (e) => {
         surname: document.getElementById('driverSurname').value,
         age: document.getElementById('driverAge').value
     };
-    if (await apiPost('/api/drivers', newDriver)) {
+    if (await apiRequest('/api/drivers', 'POST', newDriver)) {
         e.target.reset();
         alert('Piloto cadastrado!');
     }
 });
 
-// 2. Salvar Corrida
 document.getElementById('raceForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const newRace = {
@@ -71,14 +72,13 @@ document.getElementById('raceForm').addEventListener('submit', async (e) => {
         date: document.getElementById('raceDate').value,
         flag: document.getElementById('raceFlag').value || '🏁'
     };
-    if (await apiPost('/api/races', newRace)) {
+    if (await apiRequest('/api/races', 'POST', newRace)) {
         e.target.reset();
         alert('Corrida agendada!');
-        updateSelects(); // Atualiza o select da outra aba também
     }
 });
 
-// --- RENDERIZAÇÃO NA TELA ---
+// --- RENDERIZAÇÃO DAS LISTAS (COM BOTÃO EDITAR) ---
 
 function renderLists() {
     // Lista de Pilotos
@@ -86,46 +86,117 @@ function renderLists() {
     dTable.innerHTML = appData.drivers.map(d => 
         `<tr>
             <td class="align-middle">${d.name} ${d.surname}</td>
-            <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="apiDelete('/api/drivers/${d.id}')"><i class="fas fa-trash"></i></button></td>
+            <td class="text-end">
+                <button class="btn btn-sm btn-outline-info me-1" onclick="openEditDriver('${d.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteItem('/api/drivers/${d.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
         </tr>`
     ).join('');
 
     // Lista de Corridas
     const rTable = document.getElementById('racesListTable');
     rTable.innerHTML = appData.races.map(r => {
-        const dateFormatted = new Date(r.date).toLocaleDateString('pt-BR');
+        const dateFormatted = new Date(r.date).toLocaleDateString('pt-BR'); // Corrige problema de fuso se necessário
         return `<tr>
             <td class="align-middle">${r.flag} ${r.name} <small class="text-muted">(${dateFormatted})</small></td>
-            <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="apiDelete('/api/races/${r.id}')"><i class="fas fa-trash"></i></button></td>
+            <td class="text-end">
+                <button class="btn btn-sm btn-outline-info me-1" onclick="openEditRace('${r.id}')">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn btn-sm btn-outline-danger" onclick="deleteItem('/api/races/${r.id}')">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
         </tr>`;
     }).join('');
 }
 
-// Preenche o Select da aba de Pontos
-function updateSelects() {
-    const s = document.getElementById('scoringRaceSelect');
-    s.innerHTML = '<option value="">-- Selecione a Corrida --</option>' + 
-        appData.races.map(r => `<option value="${r.id}">${r.flag} ${r.name}</option>`).join('');
+async function deleteItem(url) {
+    if(confirm('Tem certeza? Isso apagará dados vinculados.')) {
+        await apiRequest(url, 'DELETE');
+    }
 }
 
-// --- LÓGICA DE PONTUAÇÃO ---
+// --- LÓGICA DE EDIÇÃO (MODAIS) ---
 
-// Gera a tabela de inputs para lançar resultados
+// 1. Pilotos
+window.openEditDriver = function(id) {
+    const d = appData.drivers.find(driver => driver.id === id);
+    if (!d) return;
+
+    document.getElementById('editDriverId').value = d.id;
+    document.getElementById('editDriverName').value = d.name;
+    document.getElementById('editDriverSurname').value = d.surname;
+    document.getElementById('editDriverAge').value = d.age;
+    
+    driverModal.show();
+}
+
+window.saveDriverEdit = async function() {
+    const id = document.getElementById('editDriverId').value;
+    const body = {
+        name: document.getElementById('editDriverName').value,
+        surname: document.getElementById('editDriverSurname').value,
+        age: document.getElementById('editDriverAge').value
+    };
+    
+    if (await apiRequest(`/api/drivers/${id}`, 'PUT', body)) {
+        driverModal.hide();
+        // Não precisa de alert, a lista já atualiza
+    }
+}
+
+// 2. Corridas
+window.openEditRace = function(id) {
+    const r = appData.races.find(race => race.id === id);
+    if (!r) return;
+
+    document.getElementById('editRaceId').value = r.id;
+    document.getElementById('editRaceName').value = r.name;
+    document.getElementById('editRaceDate').value = r.date; // Formato YYYY-MM-DD funciona direto no input date
+    document.getElementById('editRaceFlag').value = r.flag;
+    
+    raceModal.show();
+}
+
+window.saveRaceEdit = async function() {
+    const id = document.getElementById('editRaceId').value;
+    const body = {
+        name: document.getElementById('editRaceName').value,
+        date: document.getElementById('editRaceDate').value,
+        flag: document.getElementById('editRaceFlag').value
+    };
+    
+    if (await apiRequest(`/api/races/${id}`, 'PUT', body)) {
+        raceModal.hide();
+    }
+}
+
+// --- PARTE DE PONTUAÇÃO (MANTEVE IGUAL) ---
+
+function updateSelects() {
+    const s = document.getElementById('scoringRaceSelect');
+    // Salva seleção atual para não perder ao recarregar
+    const currentVal = s.value;
+    
+    s.innerHTML = '<option value="">-- Selecione a Corrida --</option>' + 
+        appData.races.map(r => `<option value="${r.id}">${r.flag} ${r.name}</option>`).join('');
+        
+    s.value = currentVal;
+}
+
 window.loadScoringTable = function() {
     const rId = document.getElementById('scoringRaceSelect').value;
-    
-    if(!rId) {
-        alert("Por favor, selecione uma corrida primeiro!");
-        return;
-    }
+    if(!rId) { alert("Selecione uma corrida!"); return; }
 
-    // Pega resultados já existentes dessa corrida (para edição)
     const existingResults = appData.results.filter(r => r.raceId === rId);
-    
     const tbody = document.getElementById('scoringTableBody'); 
     tbody.innerHTML = '';
     
-    // Cria uma linha para cada piloto
     appData.drivers.forEach(d => {
         const prev = existingResults.find(r => r.driverId === d.id);
         const posVal = prev ? prev.position : '';
@@ -155,24 +226,19 @@ window.loadScoringTable = function() {
     document.getElementById('scoringArea').style.display = 'block';
 }
 
-// Calcula pontos em tempo real enquanto digita
 window.calcPts = function(id) {
     const posInput = document.getElementById(`pos_${id}`).value;
     const pos = parseInt(posInput);
     const fast = document.getElementById(`lap_${id}`).checked;
     
     let pts = 0;
-    
-    // Se digitou uma posição válida
     if (pos > 0) {
-        pts = (POINTS_SYSTEM[pos] || 0); // Pontos da posição
-        if (fast) pts += 1;             // +1 Ponto volta rápida
+        pts = (POINTS_SYSTEM[pos] || 0);
+        if (fast) pts += 1;
     }
-
     document.getElementById(`badge_${id}`).innerText = pts;
 }
 
-// Salvar Resultados
 document.getElementById('pointsForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const rId = document.getElementById('scoringRaceSelect').value;
@@ -182,7 +248,6 @@ document.getElementById('pointsForm').addEventListener('submit', async (e) => {
         const pos = parseInt(document.getElementById(`pos_${d.id}`).value) || 0;
         const fast = document.getElementById(`lap_${d.id}`).checked;
         
-        // Só salva quem tem posição definida (quem correu)
         if(pos > 0) {
             newResults.push({ 
                 raceId: rId, 
@@ -195,12 +260,11 @@ document.getElementById('pointsForm').addEventListener('submit', async (e) => {
     });
 
     if (newResults.length === 0) {
-        alert("Nenhum resultado preenchido. Defina as posições dos pilotos.");
+        alert("Nenhum resultado preenchido.");
         return;
     }
 
-await apiPost('/api/results', { raceId: rId, results: newResults });
-    alert('Resultados salvos e ranking atualizado!');
+    if (await apiRequest('/api/results', 'POST', { raceId: rId, results: newResults })) {
+        alert('Ranking atualizado!');
+    }
 });
-
-// TESTE DE COMENTÁRIO

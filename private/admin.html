@@ -129,6 +129,66 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <div class="modal fade" id="editDriverModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Editar Piloto</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editDriverId">
+                    <div class="mb-2">
+                        <label>Nome</label>
+                        <input type="text" class="form-control" id="editDriverName">
+                    </div>
+                    <div class="mb-2">
+                        <label>Sobrenome</label>
+                        <input type="text" class="form-control" id="editDriverSurname">
+                    </div>
+                    <div class="mb-2">
+                        <label>Idade</label>
+                        <input type="number" class="form-control" id="editDriverAge">
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="saveDriverEdit()">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="editRaceModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark text-white border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Editar Corrida</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="editRaceId">
+                    <div class="mb-2">
+                        <label>Nome da Pista</label>
+                        <input type="text" class="form-control" id="editRaceName">
+                    </div>
+                    <div class="mb-2">
+                        <label>Data</label>
+                        <input type="date" class="form-control" id="editRaceDate">
+                    </div>
+                    <div class="mb-2">
+                        <label>Bandeira</label>
+                        <input type="text" class="form-control" id="editRaceFlag">
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-success" onclick="saveRaceEdit()">Salvar Alterações</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="js/admin.js"></script>
 </body>
 </html>
